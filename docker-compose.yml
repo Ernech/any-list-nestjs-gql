@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:14.4
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    container_name: anylistDB
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+  pgAdmin:
+    image: dpage/pgadmin4:7.7
+    container_name: anylistPgAdmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PG_ADM_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_ADM_PASSWORD}
+      PGADMIN_LISTEN_PORT: 5433
+    ports:
+      - "5433:5433"
+    volumes:
+      - ./postgres:/var/lib/pgAdmin
+    depends_on:
+      - db
+
+
+
