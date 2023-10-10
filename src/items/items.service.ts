@@ -3,6 +3,7 @@ import { CreateItemInput, UpdateItemInput } from './dto/inputs';
 import { Item } from './entities/item.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm'
+import { User } from 'src/users/entities/user.entity';
 @Injectable()
 export class ItemsService {
 
@@ -10,21 +11,37 @@ export class ItemsService {
     @InjectRepository(Item) private readonly itemsRepository:Repository<Item>
   ){}
 
-  async create(createItemInput: CreateItemInput):Promise<Item> {
-    const newItem = this.itemsRepository.create(createItemInput);
+  async create(createItemInput: CreateItemInput, user:User):Promise<Item> {
+    const newItem = this.itemsRepository.create({...createItemInput, user});
     return await this.itemsRepository.save(newItem);
   }
 
-  async findAll():Promise<Item[]> {
+  async findAll(user:User):Promise<Item[]> {
     //TODO: Pagination, and filter
-    return await this.itemsRepository.find();
+    // return await this.itemsRepository.createQueryBuilder('item').select()
+    // .where('(item.userId = :id)')
+    // .setParameters({id:user.id})
+    // .getMany();
+    return await this.itemsRepository.find({
+      where:{
+        user:{
+          id:user.id
+        }
+      }
+    });
   }
 
- async findOne(id: string):Promise<Item> {
-    const item = await this.itemsRepository.findOneBy({id});
+ async findOne(id: string, user:User):Promise<Item> {
+    // const item= await this.itemsRepository.createQueryBuilder('item').select()
+    // .where('(item.userId = :id)')
+    // .andWhere('(item.id = :itemId)')
+    // .setParameters({id:user.id, itemId:id})
+    // .getOne();
+    const item = await this.itemsRepository.findOneBy({id,user:{id:user.id}})
     if(!item){
       throw new NotFoundException(`The item with the id ${id} doesn't exists`);
     }
+   
     return item;
   }
 
@@ -34,9 +51,8 @@ export class ItemsService {
       return await this.itemsRepository.save(item);
   }
 
-  async remove(id: string):Promise<Item> {
-    //TODO: Soft deleete, referential inegrity
-    const item = await this.findOne(id);
+  async remove(id: string,user:User):Promise<Item> {
+    const item = await this.findOne(id,user);
     await this.itemsRepository.remove(item);
     return {...item,id};
   }

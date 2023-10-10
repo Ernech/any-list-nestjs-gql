@@ -1,25 +1,31 @@
-import {ParseUUIDPipe} from '@nestjs/common';
-import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
+import {ParseUUIDPipe, UseGuards} from '@nestjs/common';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { ItemsService } from './items.service';
 import { Item } from './entities/item.entity';
 import { CreateItemInput, UpdateItemInput } from './dto/inputs';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { User } from 'src/users/entities/user.entity';
+
 @Resolver(() => Item)
+@UseGuards(JwtAuthGuard)
 export class ItemsResolver {
   constructor(private readonly itemsService: ItemsService) {}
 
-  @Mutation(() => Item)
-  async createItem(@Args('createItemInput') createItemInput: CreateItemInput):Promise<Item> {
-    return await this.itemsService.create(createItemInput);
+  @Mutation(() => Item,{name:'createItem'})
+  async createItem(@Args('createItemInput') createItemInput: CreateItemInput,
+  @CurrentUser() user:User):Promise<Item> {
+    return await this.itemsService.create(createItemInput, user);
   }
 
   @Query(() => [Item], { name: 'items' })
-  async findAll() {
-    return this.itemsService.findAll();
+  async findAll(@CurrentUser() user:User ) {
+    return this.itemsService.findAll(user);
   }
 
   @Query(() => Item, { name: 'item' })
-  findOne(@Args('id', { type: () => ID }, ParseUUIDPipe) id: string) {
-    return this.itemsService.findOne(id);
+  findOne(@Args('id', { type: () => ID }, ParseUUIDPipe) id: string, @CurrentUser() user:User) {
+    return this.itemsService.findOne(id,user);
   }
 
   @Mutation(() => Item)
@@ -30,7 +36,7 @@ export class ItemsResolver {
   }
 
   @Mutation(() => Item)
-  removeItem(@Args('id', { type: () => ID }) id: string):Promise<Item> {
-    return this.itemsService.remove(id);
+  removeItem(@Args('id', { type: () => ID }) id: string, @CurrentUser() user:User):Promise<Item> {
+    return this.itemsService.remove(id,user);
   }
 }
