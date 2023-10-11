@@ -45,8 +45,9 @@ export class ItemsService {
     return item;
   }
 
-  async update(id: string, updateItemInput: UpdateItemInput):Promise<Item> {
-      const item = await this.itemsRepository.preload(updateItemInput);
+  async update(id: string, updateItemInput: UpdateItemInput, user:User):Promise<Item> {
+    await this.findOne(id,user);  
+    const item = await this.itemsRepository.preload(updateItemInput);
       if(!item) throw new NotFoundException(`The item with the id ${id} doesn't exists`);
       return await this.itemsRepository.save(item);
   }
@@ -56,4 +57,16 @@ export class ItemsService {
     await this.itemsRepository.remove(item);
     return {...item,id};
   }
+
+  async itemCountByUser(user:User):Promise<number>{
+    return this.itemsRepository.count({
+      where:{
+        user:{
+          id: user.id
+        }
+      }
+    })
+  }
+
+
 }

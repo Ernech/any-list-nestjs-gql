@@ -30,9 +30,10 @@ export class ItemsResolver {
 
   @Mutation(() => Item)
   async updateItem(
-    @Args('updateItemInput') updateItemInput: UpdateItemInput
-  ) {
-    return this.itemsService.update(updateItemInput.id, updateItemInput);
+    @Args('updateItemInput') updateItemInput: UpdateItemInput,
+    @CurrentUser() user:User
+    ) {
+    return this.itemsService.update(updateItemInput.id, updateItemInput, user);
   }
 
   @Mutation(() => Item)
