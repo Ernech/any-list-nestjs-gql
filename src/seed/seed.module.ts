@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { SeedService } from './seed.service';
 import { SeedResolver } from './seed.resolver';
-import { ItemsService } from 'src/items/items.service';
-import { UsersService } from 'src/users/users.service';
+import { ItemsModule } from 'src/items/items.module';
+import { UsersModule } from 'src/users/users.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports:[ItemsService, UsersService],
+  imports:[ItemsModule, UsersModule, ConfigModule],
   providers: [SeedResolver, SeedService],
 })
 export class SeedModule {}
