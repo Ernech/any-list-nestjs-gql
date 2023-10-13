@@ -25,3 +25,4 @@ localhost:3000/grapthql
 ```
 localhost:5433
 ```
+8. Execute executeSeed __"mutation"__, for creating the database
