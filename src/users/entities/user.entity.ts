@@ -42,7 +42,7 @@ export class User {
   lastUpdatedBy?:User;
 
   @OneToMany(()=>Item, (item)=>item.user, {lazy:true})
-  @Field(()=>[Item])
+  //@Field(()=>[Item])
   items:Item[];
 
 

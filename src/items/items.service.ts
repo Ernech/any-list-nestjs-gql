@@ -19,7 +19,7 @@ export class ItemsService {
   }
 
   async findAll(user:User, paginationArgs:PaginationArgs, searchArgs:SearchArgs):Promise<Item[]> {
-    //TODO: Filter
+    
     const {limit, offset} = paginationArgs;
     const { search } = searchArgs;
     const queryBulder= this.itemsRepository.createQueryBuilder('item').select()
