@@ -40,18 +40,18 @@ export class ListService {
 
   async update(id: string, updateListInput: UpdateListInput,user:User):Promise<List> {
     await this.findOne(id,user);
-    const list = await this.listRepository.preload(updateListInput); 
+    const list = await this.listRepository.preload({...updateListInput, user}); 
     if(!list) throw new NotFoundException('List not found')
     return await this.listRepository.save(list);
   }
 
-  async remove(id: string, user:User) {
+  async remove(id: string, user:User):Promise<List> {
     const list = await this.findOne(id,user);
     await this.listRepository.remove(list);
     return {...list,id};
   }
 
-  async getListCount(user:User){
+  async getListCount(user:User):Promise<number>{
     const query = this.listRepository
     .createQueryBuilder('list')
     .select()
