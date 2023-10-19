@@ -2,11 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type List {
-  id: String!
-  name: String!
-}
-
 type User {
   id: ID!
   fullName: String!
@@ -18,6 +13,16 @@ type User {
   listCount: Int!
   items(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
   lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
+}
+
+type List {
+  id: String!
+  name: String!
+  listItem: [ListItem!]!
+}
+
+type ListItem {
+  item: Item!
 }
 
 type Item {
@@ -40,6 +45,7 @@ type Query {
   lists(search: String, offset: Int = 0, limit: Int = 10): [List!]!
   list(id: ID!): List!
   revalidate: AuthResponse!
+  listItem(id: Int!): ListItem!
 }
 
 """List of valid roles for the users"""
@@ -63,6 +69,9 @@ type Mutation {
 
   """Execute database construction"""
   executeSeed: Boolean!
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
+  removeListItem(id: Int!): ListItem!
 }
 
 input CreateItemInput {
@@ -103,4 +112,15 @@ input SignUpInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input CreateListItemInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateListItemInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }
