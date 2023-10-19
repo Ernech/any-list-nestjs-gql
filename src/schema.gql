@@ -22,6 +22,9 @@ type List {
 }
 
 type ListItem {
+  id: ID!
+  quantity: Float!
+  completed: Boolean!
   item: Item!
 }
 
@@ -45,7 +48,7 @@ type Query {
   lists(search: String, offset: Int = 0, limit: Int = 10): [List!]!
   list(id: ID!): List!
   revalidate: AuthResponse!
-  listItem(id: Int!): ListItem!
+  listItem: [ListItem!]!
 }
 
 """List of valid roles for the users"""
@@ -70,8 +73,6 @@ type Mutation {
   """Execute database construction"""
   executeSeed: Boolean!
   createListItem(createListItemInput: CreateListItemInput!): ListItem!
-  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
-  removeListItem(id: Int!): ListItem!
 }
 
 input CreateItemInput {
@@ -115,12 +116,8 @@ input LoginInput {
 }
 
 input CreateListItemInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateListItemInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  quantity: Float = 0
+  completed: Boolean = false
+  listId: ID!
+  itemId: ID!
 }
