@@ -20,7 +20,7 @@ export class List {
   user:User;
 
   @OneToMany(()=>ListItem, (listItem)=>listItem.item)
-  @Field(()=>[ListItem])
+  //@Field(()=>[ListItem])
   listItem:ListItem[];
 
 }

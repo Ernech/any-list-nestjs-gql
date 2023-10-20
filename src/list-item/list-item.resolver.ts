@@ -1,33 +1,35 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { ListItemService } from './list-item.service';
 import { ListItem } from './entities/list-item.entity';
 import { CreateListItemInput } from './dto/create-list-item.input';
 import { UpdateListItemInput } from './dto/update-list-item.input';
-import { UseGuards } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { ListService } from 'src/list/list.service';
 
 @Resolver(() => ListItem)
 @UseGuards(JwtAuthGuard)
 export class ListItemResolver {
-  constructor(private readonly listItemService: ListItemService) {}
+  constructor(
+    private readonly listItemService: ListItemService) {}
 
   @Mutation(() => ListItem)
   createListItem(
     @Args('createListItemInput') createListItemInput: CreateListItemInput
-    //! TODO: Verify if the list belongs to the user
     ) {
     return this.listItemService.create(createListItemInput);
   }
 
-  @Query(() => [ListItem], { name: 'listItem' })
-  findAll() {
-    return this.listItemService.findAll();
-  }
-
-  // @Query(() => ListItem, { name: 'listItem' })
-  // findOne(@Args('id', { type: () => Int }) id: number) {
-  //   return this.listItemService.findOne(id);
+  // @Query(() => [ListItem], { name: 'listItem' })
+  // findAll() {
+  //   return this.listItemService.findAll();
   // }
+
+  @Query(() => ListItem, { name: 'listItem' })
+  findOne(@Args('id', { type: () => String }, ParseUUIDPipe) id: string)
+  :Promise<ListItem> {
+    return this.listItemService.findOne(id);
+  }
 
   // @Mutation(() => ListItem)
   // updateListItem(@Args('updateListItemInput') updateListItemInput: UpdateListItemInput) {
