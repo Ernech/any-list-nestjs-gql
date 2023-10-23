@@ -60,8 +60,31 @@ export class ListItemService {
     return listItem;
   }
 
-  update(id: number, updateListItemInput: UpdateListItemInput) {
-    return `This action updates a #${id} listItem`;
+  async update(id: string, updateListItemInput: UpdateListItemInput):Promise<ListItem> {
+    
+    const { listId, itemId, ...rest} = updateListItemInput;
+   
+    const queryBuilder = this.listItemsRepository.createQueryBuilder()
+    .update()
+    .set(rest)
+    .where('id=:id',{id});
+   
+    if(listId) queryBuilder.set({list:{id:listId}});
+    if(itemId) queryBuilder.set({item:{id:itemId}});
+
+    await queryBuilder.execute();
+
+    return this.findOne(id);
+
+    // const listItem = await this.listItemsRepository.preload({
+    //     ...rest,
+    //     list:{id:listId},
+    //     item:{id:itemId}
+    // });
+
+    // if(!listItem) throw new NotFoundException(`List item with the id ${id} was not funded`);
+
+ //   return await this.listItemsRepository.save(listItem)
   }
 
   remove(id: number) {
